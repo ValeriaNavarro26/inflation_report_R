@@ -1,0 +1,191 @@
+---
+title: "Una Recuperación en Ciernes: Reactivación Económica e Inflación"
+author: "Valeria Navarro"
+date: "13/11/2021"
+output: rmdformats::robobook
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+La propagación del Covid-19 significó en el mundo una crisis sin precedentes. Sin embargo, las medidas extraordinarias de estímulo económico que optaron rápidamente los países ayudaron a establecer un escenario favorable para la recuperación de las economías; no obstante, esta recuperación aún no es definitiva y se encuentra sujeta a riesgos (contexto político, ejecución de políticas económicas y evolución de nuevas variantes del COVID-19) que pueden revertir dicha evolución.
+
+```{r, include=FALSE}
+#Limpiamos el área de trabajo
+rm(list=ls())
+```
+
+```{r, include=FALSE}
+#Fijamos la carpeta donde se encuentran los archivos que trabajaremos
+setwd("C:/Users/VALERIA/Desktop/r studio/Trabajo Final")
+```
+
+```{r, include=FALSE}
+#Cargamos las librerias que utilizaremos
+library(rio)
+library(dplyr)
+library(tidyverse)
+library(lubridate)
+library(ggplot2)
+library(knitr)
+library(rmarkdown)
+library(rmdformats)
+library(gganimate)
+library(plotly)
+library(gifski)
+library(car)
+library(readxl)
+
+```
+
+```{r, include=FALSE}
+FMI6 <- read_excel("C:/Users/VALERIA/Desktop/r studio/Trabajo Final/FMI.xlsx", sheet = "Hoja8")
+```
+
+
+```{r, echo=FALSE}
+ggplot(data=FMI6)+
+  geom_line(aes(x=Fecha, y=`Industrial production`, group=1, colour="Producción Industrial"), size=1) +
+  geom_line(aes(x=Fecha, y=`Manufacturing PMI: New orders`, group=2, colour="PMI Manufactura: Nuevas órdenes"),  size=1)+
+  geom_line(aes(x=Fecha, y=`Services PMI: New business`, group=3,colour="PMI Servicios: Nuevos negocios"),  size=1)+
+  labs(title="Gráfico N°1: Indicadores de actividad global",subtitle="Promedio trimestre móvil, cambio porcentual anualizado para la producción industrial",y="",x="", caption= "Fuente:FMI", colour="")  + theme_minimal()+theme(legend.position = "bottom")+
+   scale_color_manual(values =c("red2","chartreuse3","cyan3"))+
+transition_reveal(Fecha)
+
+```
+
+En muchos países ya se han recuperado los niveles de actividad previos a la pandemia. Por ejemplo, como se observa en el Gráfico N°1, luego de una gran caída en el 2020, las indicadores se encuentran por encima de finales del 2019. Sin embargo,  junto a estos avances positivos, se ha producido un aumento de la inflación (ver Gráfico N°2), que a pesar de ser aún moderado, puede implicar un riesgo hacia adelante. Estas presiones inflacionarias se deberían principalmente a 4 factores: i) recuperación de la demanda, ii) restricciones de oferta, iii) efecto traspaso del tipo de cambio, y iv) factores externos.
+
+```{r, include=FALSE}
+#Cargamos la bases de datos 
+FMI <- read_excel("C:/Users/VALERIA/Desktop/r studio/Trabajo Final/FMI.xlsx", sheet = "Hoja1")
+```
+
+
+```{r, include=FALSE}
+FMI <- na.omit(FMI)
+```
+
+
+```{r, echo=FALSE}
+
+ggplot(data=FMI)+
+  geom_line(aes(x=Date, y=`CPI AEs`, group=1, colour="IPC EAs"), size=1) +
+  geom_line(aes(x=Date, y=`CPI EMs`, group=2, colour="IPC EMs"),  size=1)+
+  geom_line(aes(x=Date, y=`CPI LIDCs`, group=3,colour="IPC EDs"),  size=1)+
+  geom_line(aes(x=Date, y=`Core CPI AEs`, group=4, colour="IPC Core EAs"), size=1)+
+  geom_line(aes(x=Date, y=`Core CPI EMs`, group=5, colour="IPC Core EMs"), size=1)+
+  labs(title="Gráfico N°2:Inflación por Grupo de Países",subtitle="Mediana, variación interanual",y="%",x="", caption= "Fuente:FMI. 
+       Nota: EAs = Economías Avanzadas, EMs= Economías de mercado emergentes, 
+       EDs= Economías en desarrollo de bajos ingresos, IPC= Índice de Precios al Consumidor", colour="")  + theme_minimal()+theme(legend.position = "bottom")+
+   scale_color_manual(values =c("red2","grey","dodgerblue4","cyan3","chartreuse3"))+
+transition_reveal(Date)
+  
+  
+```
+
+El primer factor de la aceleración de la inflación se encuentra en la demanda. La demanda interna se ha recuperado rápidamente, impulsada principalmente por un mayor consumo (ver Gráfico N°3), debido a los estímulos fiscales brindados por el gobierno para el alivio de los hogares, el uso del ahorro preventivo (ver Gráfico N°4) y la situación previa de una demanda muy deprimida.
+
+
+```{r, include=FALSE}
+
+FMI5 <- read_excel("C:/Users/VALERIA/Desktop/r studio/Trabajo Final/FMI.xlsx", sheet = "Hoja7")
+
+names(FMI5)[1] = "Fecha"
+
+```
+
+```{r, include=FALSE}
+FMI5 = FMI5 %>% gather(periodo,values,`Real private consumption` :Other)
+```
+
+```{r, echo=FALSE}
+ggplot(FMI5)+
+ geom_bar(aes(x=Fecha, y=values, fill=periodo),stat='identity')+
+  geom_point(aes(x=Fecha, y=`World real GDP growth`))+
+   labs(title="Gráfico N°3:Impulsores del crecimiento",subtitle="Contribución de crecimiento por trimestre",y="",x="", caption= "Fuente:FMI. 
+  Nota: Los puntos indican el crecimeinto del PBI Mundial", colour="")  + theme_minimal()+theme(legend.position = "bottom", legend.title=element_blank())+
+  scale_fill_brewer(palette = "Set1")
+
+```
+
+
+```{r, include=FALSE}
+FMI2 <- read_excel("C:/Users/VALERIA/Desktop/r studio/Trabajo Final/FMI.xlsx", sheet = "Hoja2")
+```
+
+```{r, include=FALSE}
+names(FMI2)[2] = "Ahorro"
+
+  FMI2 %>%
+    mutate(PAIS= fct_reorder(PAIS, Ahorro)) %>%
+ggplot() +
+  aes(x = PAIS, y = Ahorro) +
+  geom_col(fill="dodgerblue4")+ theme_minimal()+
+  labs(title="Gráfico N°4: Ahorro Acumulado", subtitle=" Porcentaje de los ahorro esperados", y="%",x="", caption= "Fuente:FMI")+ theme(axis.text.x=element_text(angle=90)) 
+```
+
+Un segundo factor importante para el aumento de precios ha sido las restricciones de oferta que se han generado a partir de la ruptura de las cadenas de suministro (ver Gráfico N°5) , el aumento del precio de materias primas (ver Gráfico N°6), cuellos de botella, aumento de los costos de transporte y escasez de insumos. Lo cual viene generando que empresas se vean imposibilitadas de ajustarse a la rápida recuperación de la demanda al no poder recuperar sus niveles de producción previos.
+
+
+```{r , include=FALSE}
+FMI4 <- read_excel("C:/Users/VALERIA/Desktop/r studio/Trabajo Final/FMI.xlsx", sheet = "Hoja4")
+```
+
+```{r , echo=FALSE}
+
+ggplot(data=FMI4)+
+  geom_line(aes(x=Time, y=`Euro area`, group=1, colour="Zona Euro"), size=1) +
+  geom_line(aes(x=Time, y=`United States`, group=2, colour="EE.UU"),  size=1)+
+  geom_line(aes(x=Time, y=`China`, group=3,colour="China"),  size=1)+
+  geom_line(aes(x=Time, y=`Emerging market economies`, group=4, colour="Economías Emergentes"), size=1)+
+  labs(title="Gráfico N°5: Disrupciones en las cadenas de suministro",subtitle="Índice",y="",x="", caption= "Fuente:FMI. 
+  Nota: Las disrupciones de la cadena de suministro se calculan como la diferencia entre el subíndice de tiempos de entrega 
+  del  suministro de los gestores de compras y una medida contrafáctica y cíclica de los tiempos de entrega del suministro 
+  basada en el subíndice de producción manufacturera del PMI", colour="")  + theme_minimal()+theme(legend.position = "bottom")+
+   scale_color_manual(values =c("red2","dodgerblue4","cyan3","chartreuse3")) +
+transition_reveal(Time)
+```
+
+
+```{r, include=FALSE}
+#Cargamos la bases de datos 
+FMI3 <- read_excel("C:/Users/VALERIA/Desktop/r studio/Trabajo Final/FMI.xlsx", sheet = "Hoja3")
+```
+
+```{r, echo=FALSE}
+ggplot(data=FMI3)+
+  geom_line(aes(x=Date, y=`Base metals`, group=1, colour="Metales básicos"), size=1) +
+  geom_line(aes(x=Date, y=Oil, group=2, colour="Petróleo"),  size=1)+
+  labs(title="Gráfico N°6: Precio de Commodities",subtitle="Índice, Junio 2014=100",y="",x="", caption= "Fuente:FMI", colour="") + theme_minimal()+ theme(legend.position = "bottom")+
+   scale_color_manual(values =c("dodgerblue4","chartreuse3"))+
+transition_reveal(Date)
+  
+```
+
+Por otra parte, en los últimos meses se ha observado una fuerte depreciación y variabilidad del sol frente al dólar. Ello tendría origen principalmente en factores idiosincráticos. Por ejemplo, el contexto político ha sido una constante que ha gatillado dicha situación en muchos países. Este factor ha contribuido al alza del precio principalmente por dos canales. El primer canal (el más directo) es a través del aumento de los bienes importados. Mientras el segundo canal, se debe al incremento del precio de insumos importados que se transfiere al bien final que es comprado por el consumir.
+
+Finalmente, países con una economía pequeña y abierta también se encuentran sujetas a factores externos como las condiciones financieras mundiales. Por lo que también ha sido determinante la evolución de la inflación de economías avanzadas y decisiones de política de otros países en la inflación local de los países.
+
+Por lo tanto, según lo anterior, los aumentos de precios, no solo son consecuencia de un factor sino que provienen tanto del lado de la oferta como el de la demanda y del contexto que atraviesa el país. Para que esta situación se alivie y la persistencia de las presiones inflacionarias no se materialicen en mayores desequilibrios macroeconómicos, el accionar de las autoridades de política económica será fundamental, ya que, hasta el momento, no hay un panorama claro de que los factores sean transitorios y de que la economía podría retornar a una senda de equilibrio.
+
+Al respecto para que se dé el caso en el cual los factores se disipen y las presiones inflacionarias se reviertan (escenario ideal) se debería suponer que las presiones de la demanda irán disminuyendo, que la demanda se rebalanceará desde bienes a servicios, que las políticas expansivas en respuesta de la pandemia se puedan revertir con facilidad y las expectativas se encuentren bien ancladas (BCCH, 2021). Sin embargo, como se ha venido observando en el contexto actual, y como se ha mencionado anteriormente, estos supuestos no son un hecho claro. Por lo que las autoridades deberán sopesar en sus decisiones: (i) no perjudicar la recuperación en transcurso de la economía y (ii) mitigar los efectos de la inflación en la actividad económica.
+
+
+## Referencias
+
+BCCH. (2021, 19 de octubre). IMF High-level Policy Panel “Inflation Scares” Remarks [Nota de prensa]. https://www.bcentral.cl/documents/33528/133214/mmc19102021.pdf/3408dc39-
+7e4d-fc63-007d-eb838d649b60?t=1634684132760
+
+BCRP. (2021). Reporte de inflación Setiembre 2021: Panorama actual y proyecciones macroeconómica 2021-2022.https://www.bcrp.gob.pe/docs/Publicaciones/Reporte-Inflacion/2021/setiembre/reporte-de-inflacion-setiembre-2021.pdf
+
+IMF. (2021). World Economic Outlook.
+
+Winkelried, D. (2012). Traspaso del tipo de cambio y metas de inflación en el Perú. Banco Central de Reserva del Perú. Revista Estudios Económicos, 23, 9-24.
+
+
+
+
+
+
